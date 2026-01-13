@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поморский Словарь</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; background: #f4f7f9; }
+        h1 { color: #2c3e50; text-align: center; }
+        #search { width: 100%; padding: 15px; font-size: 18px; border: 2px solid #3498db; border-radius: 8px; box-sizing: border-box; }
+        #results { margin-top: 20px; }
+        .item { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .word { font-weight: bold; color: #e74c3c; font-size: 20px; }
+        .translation { display: block; margin: 5px 0; font-size: 18px; }
+        .info { font-style: italic; color: #7f8c8d; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <h1>Поморская Говоря</h1>
+    <input type="text" id="search" placeholder="Введите слово (русское или поморское)...">
+    <div id="results"></div>
+
+    <script>
+        let dictionary = [];
+
+        // Загружаем данные из файла data.json
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                dictionary = data;
+            });
+
+        const searchInput = document.getElementById('search');
+        const resultsDiv = document.getElementById('results');
+
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+            resultsDiv.innerHTML = '';
+
+            if (query.length < 2) return;
+
+            const filtered = dictionary.filter(item => 
+                item.word.toLowerCase().includes(query) || 
+                item.translation.toLowerCase().includes(query)
+            );
+
+            filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `
+                    <span class="word">${item.word}</span>
+                    <span class="translation">${item.translation}</span>
+                    <span class="info">${item.info}</span>
+                `;
+                resultsDiv.appendChild(div);
+            });
+        });
+    </script>
+</body>
+</html>
