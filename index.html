@@ -3,39 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Поморский Словарь</title>
+    <title>Помо́рьска гово́ря — Словарь</title>
     <style>
-        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; background: #f4f7f9; }
-        h1 { color: #2c3e50; text-align: center; }
-        #search { width: 100%; padding: 15px; font-size: 18px; border: 2px solid #3498db; border-radius: 8px; box-sizing: border-box; }
-        #results { margin-top: 20px; }
-        .item { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .word { font-weight: bold; color: #e74c3c; font-size: 20px; }
-        .translation { display: block; margin: 5px 0; font-size: 18px; }
-        .info { font-style: italic; color: #7f8c8d; font-size: 14px; }
+        /* Современный морской стиль */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 700px; margin: 0 auto; padding: 20px; background: #eef2f5; color: #2c3e50; }
+        
+        .header-container { text-align: center; margin-bottom: 30px; }
+        
+        h1 { color: #1a3c5a; text-transform: lowercase; letter-spacing: 1px; font-size: 36px; margin-bottom: 10px; }
+        
+        .description { font-size: 16px; color: #576574; line-height: 1.5; margin-bottom: 25px; }
+
+        #search { width: 100%; padding: 18px; font-size: 18px; border: 1px solid #bdc3c7; border-radius: 30px; box-sizing: border-box; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; }
+        #search:focus { border-color: #3498db; box-shadow: 0 4px 12px rgba(52,152,219,0.2); }
+
+        #results { margin-top: 30px; }
+        .item { background: white; padding: 20px; margin-bottom: 15px; border-radius: 12px; border-left: 5px solid #3498db; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .word { font-weight: bold; color: #2980b9; font-size: 22px; display: block; }
+        .translation { display: block; margin: 8px 0; font-size: 18px; line-height: 1.4; }
+        .info { font-style: italic; color: #7f8c8d; font-size: 14px; background: #f9f9f9; padding: 5px 10px; border-radius: 5px; margin-top: 10px; display: inline-block; }
+        
+        /* Подсказка, когда ничего не найдено */
+        .no-results { text-align: center; color: #7f8c8d; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <h1>Поморская Говоря</h1>
-    <input type="text" id="search" placeholder="Введите слово (русское или поморское)...">
+    <div class="header-container">
+        <h1>помо́рьска гово́ря</h1>
+        <p class="description">
+            электронная версия крупных словарей поморьской говори.<br>
+            для поиска, начните вводить слово на русском или поморском языках в строке ниже
+        </p>
+        <input type="text" id="search" placeholder="Поиск слова..." autofocus>
+    </div>
+
     <div id="results"></div>
 
     <script>
         let dictionary = [];
 
-        // Загружаем данные из файла data.json
+        // Загрузка данных
         fetch('data.json')
             .then(response => response.json())
             .then(data => {
                 dictionary = data;
-            });
+            })
+            .catch(err => console.error("Ошибка загрузки словаря:", err));
 
         const searchInput = document.getElementById('search');
         const resultsDiv = document.getElementById('results');
 
         searchInput.addEventListener('input', () => {
-            const query = searchInput.value.toLowerCase();
+            const query = searchInput.value.toLowerCase().trim();
             resultsDiv.innerHTML = '';
 
             if (query.length < 2) return;
@@ -44,6 +64,11 @@
                 item.word.toLowerCase().includes(query) || 
                 item.translation.toLowerCase().includes(query)
             );
+
+            if (filtered.length === 0) {
+                resultsDiv.innerHTML = '<p class="no-results">Слово не найдено в словаре</p>';
+                return;
+            }
 
             filtered.forEach(item => {
                 const div = document.createElement('div');
